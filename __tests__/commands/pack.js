@@ -172,6 +172,18 @@ test.concurrent('pack should exclude all files in dot-directories if not in file
   });
 });
 
+test.concurrent('pack should exclude all files with glob negate flag in files array', (): Promise<void> => {
+  return runPack([], {}, 'files-glob-negate-flag', async (config): Promise<void> => {
+    const {cwd} = config;
+    const files = await getFilesFromArchive(
+      path.join(cwd, 'files-glob-negate-flag-v1.0.0.tgz'),
+      path.join(cwd, 'files-glob-negate-flag-v1.0.0'),
+    );
+    const expected = ['index.js', 'package.json', 'src', path.join('src', 'a.js'), path.join('src', 'b.js')];
+    expect(files.sort()).toEqual(expected.sort());
+  });
+});
+
 test.concurrent('pack should include bundled dependencies', (): Promise<void> => {
   return runPack([], {}, 'bundled-dependencies', async (config): Promise<void> => {
     const {cwd} = config;

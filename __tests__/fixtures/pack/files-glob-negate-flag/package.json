@@ -1,0 +1,11 @@
+{
+  "name": "files-glob-negate-flag",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "src/**/*.js",
+    "!src/**/c.js"
+  ]
+}

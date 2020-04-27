@@ -85,8 +85,20 @@ export async function packTarball(
       '*', // ignore all files except those that are explicitly included with a negation filter
     ];
     lines = lines.concat(
-      onlyFiles.map((filename: string): string => `!${filename}`),
-      onlyFiles.map((filename: string): string => `!${path.join(filename, '**')}`),
+      onlyFiles.map((filename: string): string => {
+        if (filename[0] === '!') {
+          // remove the negate flag if it's already negate
+          return filename.substr(1);
+        }
+        return `!${filename}`;
+      }),
+      onlyFiles.map((filename: string): string => {
+        if (filename[0] === '!') {
+          // remove the negate flag if it's already negate
+          return path.join(filename.substr(1), '**');
+        }
+        return `!${path.join(filename, '**')}`;
+      }),
     );
     const regexes = ignoreLinesToRegex(lines, './');
     filters = filters.concat(regexes);
@@ -142,7 +154,7 @@ export async function packTarball(
 export function packWithIgnoreAndHeaders(
   cwd: string,
   ignoreFunction?: string => boolean,
-  {mapHeader}: {mapHeader?: Object => Object} = {},
+  {mapHeader}: { mapHeader?: Object => Object } = {},
 ): Promise<stream$Duplex> {
   return tar.pack(cwd, {
     ignore: ignoreFunction,
@@ -175,7 +187,7 @@ export function hasWrapper(commander: Object, args: Array<string>): boolean {
 export async function run(
   config: Config,
   reporter: Reporter,
-  flags: {filename?: string},
+  flags: { filename?: string },
   args?: Array<string>,
 ): Promise<void> {
   const pkg = await config.readRootManifest();
